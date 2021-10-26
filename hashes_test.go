@@ -14,13 +14,13 @@ func TestFnva64(t *testing.T) {
 	}
 }
 
-func TestHashSet(t *testing.T) {
+func TestHashes64(t *testing.T) {
 	tree := [][]int{
 		{0, 0, 7, 3, 0, 0, 9},
 		{1, 0, 7, 3, 0, 0, 9},
 		{0, 0, 8, 3, 0, 0, 9},
 		{1, 0, 8, 3, 0, 0, 9}}
-	hs := HashSet(tree, Fnva64)
+	hs := Hashes64(tree, Fnva64)
 	want := []uint64{
 		14647827280143437043,
 		17530493565529410009,
