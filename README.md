@@ -7,5 +7,6 @@ https://www.similar.pictures/algorithm-for-hashing-high-dimensional-float-vector
 
 Please fork if you want use it long term, as the API might change soon.
 
-
 For me TODO: Add example code.
+
+For you: use test files to get an idea. First make buckets, then hash set.
