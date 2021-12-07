@@ -6,3 +6,6 @@ Algorithm description:
 https://www.similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html
 
 Please fork if you want use it long term, as the API might change soon.
+
+
+For me TODO: Add example code.
