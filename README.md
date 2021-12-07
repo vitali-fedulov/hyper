@@ -9,4 +9,4 @@ Please fork if you want use it long term, as the API might change soon.
 
 For me TODO: Add example code.
 
-For you: use test files to get an idea. First make buckets, then hash set.
+For you: use test files to get an idea. First make buckets as in buckets_test.go, then hash set as in hashes_test.go.
