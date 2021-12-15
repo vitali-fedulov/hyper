@@ -11,7 +11,3 @@ https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-ve
 about.go contains a short instruction.
 
 Please fork if you want use it long term, as the API is not finalized yet.
-
-### TODO
-
-Add an example, for example related to package "images".
