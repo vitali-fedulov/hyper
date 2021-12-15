@@ -10,10 +10,10 @@ func TestParams(t *testing.T) {
 	bucketWidth, eps := Params(numBuckets, min, max, bucketPct)
 	wantBucketWidth, wantEps := 25.5, 6.375
 	if bucketWidth != wantBucketWidth {
-		t.Errorf(`Got bucketWidth %v, want %v`, bucketWidth, wantBucketWidth)
+		t.Errorf(`Got bucketWidth %v, want %v.`, bucketWidth, wantBucketWidth)
 	}
 	if eps != wantEps {
-		t.Errorf(`Got eps %v, want %v`, eps, wantEps)
+		t.Errorf(`Got eps %v, want %v.`, eps, wantEps)
 	}
 }
 

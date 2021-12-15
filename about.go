@@ -3,7 +3,7 @@ package hyper
 // Package hyper allows fast approximate search of nearest
 // neighbour vectors in n-dimensional space.
 // Package functions discretize a vector and generate a set
-// of fuzzy hashes, as described in the following paper:
+// of fuzzy hashes, as described in the following document:
 // https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html
 
 // A typical sequence of functions when using the package is:

@@ -10,7 +10,7 @@ func TestDefault(t *testing.T) {
 	hash := FVN1a(buckets)
 	want := uint64(13992349377752315208)
 	if hash != want {
-		t.Errorf(`Got %v, want %v`, hash, want)
+		t.Errorf(`Got %v, want %v.`, hash, want)
 	}
 }
 
@@ -27,6 +27,6 @@ func TestHashes64(t *testing.T) {
 		7065940388079601005,
 		13953051952027146823}
 	if !reflect.DeepEqual(hs, want) {
-		t.Errorf(`Got %v, want %v`, hs, want)
+		t.Errorf(`Got %v, want %v.`, hs, want)
 	}
 }

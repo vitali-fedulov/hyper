@@ -6,7 +6,7 @@ import (
 	"hash/fnv"
 )
 
-// Hash64 can be any function of this kind.
+// Hash64 can be any function (user defined, for example).
 type Hash64 func(buckets []int) uint64
 
 // FVN1a is the default hash in this package.

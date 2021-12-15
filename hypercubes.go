@@ -1,25 +1,19 @@
 package hyper
 
-// Params returns discretization parameters.
-// numBuckets represents number of discretization buckets into
-// which all values will fall. Ids of those buckets will be used
-// to create hashes.
-// min and max are minimum and maximum possible values
-// of discretized variable.
-// bucketWidth is width of the discretization bucket.
-// bucketPct is percentage of bucketWidth to allow for an error
-// of discretized variable (a specific value of a discretized
-// variable may fall into 2 buckets simultaneosly).
-// eps is actual width corresponding to the bucketWidth bucketPct
-// on the discretized variable axis.
+// Params helps with discretization parameters.
+// numBuckets is number of buckets per dimension.
+// min and max are value limits per dimension.
+// epsPercent is the uncertainty interval expressed as fraction
+// of bucketWidth.
+// eps is the absolute value of the uncertainty interval epsilon.
 func Params(
-	numBuckets int, min, max, bucketPct float64) (bucketWidth, eps float64) {
-	if bucketPct >= 0.5 {
-		panic(`Error: bucketPct must be less than 50%.
+	numBuckets int, min, max, epsPercent float64) (bucketWidth, eps float64) {
+	if epsPercent >= 0.5 {
+		panic(`Error: epsPercent must be less than 50%.
 			Recommendation: decrease numBuckets instead.`)
 	}
 	bucketWidth = (max - min) / float64(numBuckets)
-	eps = bucketPct * bucketWidth
+	eps = epsPercent * bucketWidth
 	return bucketWidth, eps
 }
 
