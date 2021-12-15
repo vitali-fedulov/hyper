@@ -9,9 +9,8 @@ import (
 // Hash64 can be any function of this kind.
 type Hash64 func(buckets []int) uint64
 
-// Default is the default Hash64 function for this package.
-// It returns a FVN-1a hash for a slice of bucket numbers.
-func Default(buckets []int) uint64 {
+// FVN1a is the default hash in this package.
+func FVN1a(buckets []int) uint64 {
 	var b bytes.Buffer
 	gob.NewEncoder(&b).Encode(buckets)
 	hash := fnv.New64a()

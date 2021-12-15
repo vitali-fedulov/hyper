@@ -1,4 +1,0 @@
-- Panic in verification that 2*eps is less than bucket width.
-  Make sure the "if" equality is correct.
-
-- Make sure hash contains ":" between bucket numbers. Or the analogy to ":".
