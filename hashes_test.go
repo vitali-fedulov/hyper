@@ -5,7 +5,17 @@ import (
 	"testing"
 )
 
-func TestDefault(t *testing.T) {
+func TestDecimal(t *testing.T) {
+	numBuckets := 5
+	hypercube := []int{3, 2, 0, 1, 1, 4, 1, 0}
+	hash := Decimal(hypercube, numBuckets)
+	want := uint64(32011410)
+	if hash != want {
+		t.Errorf(`Got %v, want %v.`, hash, want)
+	}
+}
+
+func TestFVN1a(t *testing.T) {
 	buckets := []int{5, 59, 255, 9, 7, 12, 22, 31}
 	hash := FVN1a(buckets)
 	want := uint64(13992349377752315208)
@@ -14,13 +24,13 @@ func TestDefault(t *testing.T) {
 	}
 }
 
-func TestHashes64(t *testing.T) {
+func TestHashSet(t *testing.T) {
 	tree := [][]int{
 		{0, 0, 7, 3, 0, 0, 9},
 		{1, 0, 7, 3, 0, 0, 9},
 		{0, 0, 8, 3, 0, 0, 9},
 		{1, 0, 8, 3, 0, 0, 9}}
-	hs := Hashes64(tree, FVN1a)
+	hs := HashSet(tree, FVN1a)
 	want := []uint64{
 		14647827280143437043,
 		17530493565529410009,

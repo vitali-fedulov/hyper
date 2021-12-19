@@ -30,7 +30,8 @@ func TestHypercubes(t *testing.T) {
 	numBuckets, min, max, bucketPct := 10, 0.0, 255.0, 0.25
 	values := []float64{25.5, 0.01, 210.3, 93.9, 6.6, 9.1, 254.9}
 	bucketWidth, eps := Params(numBuckets, min, max, bucketPct)
-	gotCubes, gotCentral := Hypercubes(values, min, max, bucketWidth, eps)
+	gotCubes := CubeSet(values, min, max, bucketWidth, eps)
+	gotCentral := CentralCube(values, min, max, bucketWidth, eps)
 	wantCubes := [][]int{{1, 0, 8, 3, 0, 0, 9}, {0, 0, 8, 3, 0, 0, 9},
 		{1, 0, 7, 3, 0, 0, 9}, {0, 0, 7, 3, 0, 0, 9}}
 	wantCentral := []int{1, 0, 8, 3, 0, 0, 9}
@@ -45,7 +46,8 @@ func TestHypercubes(t *testing.T) {
 	}
 
 	values = []float64{0.01, bucketWidth * 2 * 0.999, bucketWidth * 2 * 1.001}
-	gotCubes, gotCentral = Hypercubes(values, min, max, bucketWidth, eps)
+	gotCubes = CubeSet(values, min, max, bucketWidth, eps)
+	gotCentral = CentralCube(values, min, max, bucketWidth, eps)
 	wantCubes = [][]int{{0, 1, 2}, {0, 2, 2}, {0, 1, 1}, {0, 2, 1}}
 	wantCentral = []int{0, 1, 2}
 	if !reflect.DeepEqual(gotCubes, wantCubes) {

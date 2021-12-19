@@ -7,7 +7,8 @@ package hyper
 // of bucketWidth.
 // eps is the absolute value of the uncertainty interval epsilon.
 func Params(
-	numBuckets int, min, max, epsPercent float64) (bucketWidth, eps float64) {
+	numBuckets int, min, max, epsPercent float64) (
+	bucketWidth, eps float64) {
 	if epsPercent >= 0.5 {
 		panic(`Error: epsPercent must be less than 50%.
 			Recommendation: decrease numBuckets instead.`)
@@ -17,19 +18,18 @@ func Params(
 	return bucketWidth, eps
 }
 
-// Hypercubes returns a set of hypercubes, which represent
-// fuzzy discretization of one n-dimensional vector, as described in
+// CubeSet returns a set of hypercubes, which represent
+// fuzzy discretization of one n-dimensional vector,
+// as described in
 // https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html
 // One hupercube is defined by bucket numbers in each dimension.
-// The function also returns the central hypercube (in which
-// the vector end is located).
 // min and max are minimum and maximum possible values of
 // the vector components. The assumption is that min and max
 // are the same for all dimensions.
 // bucketWidth and eps are defined in the Params function.
-func Hypercubes(
+func CubeSet(
 	vector []float64, min, max, bucketWidth, eps float64) (
-	set [][]int, central []int) {
+	set [][]int) {
 
 	var (
 		bC, bS    int     // Central and side bucket ids.
@@ -42,7 +42,6 @@ func Hypercubes(
 	for _, val := range vector {
 
 		bC = int(val / bucketWidth)
-		central = append(central, bC)
 		branching = false
 
 		// Value is in the lower uncertainty interval.
@@ -103,9 +102,27 @@ func Hypercubes(
 	length = len(vector)
 	for i := 0; i < len(set); i++ {
 		if len(set[i]) != length {
-			panic(`Number of hypercube coordinates must equal to len(vector).`)
+			panic(`Number of hypercube coordinates must equal
+			to len(vector).`)
 		}
 	}
 
-	return set, central
+	return set
+}
+
+// CentralCube returns the hypercube containing the vector end.
+// Arguments are the same as for the CubeSet function.
+func CentralCube(
+	vector []float64, min, max, bucketWidth, eps float64) (
+	central []int) {
+
+	var bC int // Central bucket ids.
+
+	// For each component of the vector.
+	for _, val := range vector {
+		bC = int(val / bucketWidth)
+		central = append(central, bC)
+	}
+
+	return central
 }

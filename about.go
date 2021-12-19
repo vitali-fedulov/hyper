@@ -7,8 +7,10 @@ package hyper
 // https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html
 
 // A typical sequence of functions when using the package is:
-// 1) Params, 2) Hypercubes, 3) FVN1a to get the central hash,
-// and Hashes64 with FVN1a as the hash argument to get
-// the full hash set.
+// 1) Params, 2) CubeSet or CentralCube, depending which one
+// is used for a database record and which one for a query,
+// 3) HashSet or CentralHash to get corresponding hashes
+// from results of (2).
 
-// You can also define own function for hashing hypercubes.
+// It is possible to define own hashing function instead of
+// using the default one.
