@@ -6,21 +6,12 @@ import (
 	"hash/fnv"
 )
 
-// Decimal hashes hypercubes without collisions. For that
-// it assumes that number of buckets is 10 or less
-// and number of dimensions is 19 or less.
-func Decimal(cube []int, numBuckets int) (h uint64) {
-	if numBuckets > 10 {
-		panic(`Decimal hash can only be used if
-		numBuckets <= 10. FNV1a can be used instead.`)
-	}
-	// Max uint64 equals 18446744073709551615,
-	// therefore larger number of dimensions will overflow.
-	if len(cube) > 19 {
-		panic(`Decimal hash can only be used if
-		number of dimensions is less than 20.
-		FNV1a hash can be used instead.`)
-	}
+// Decimal hashes hypercubes without collisions. IMPORTANT:
+// To work correctly, the number of buckets must be
+// less than 11 and the number of dimensions less than 20.
+// Else at certain unexpected moment you might get a hash
+// value overflow.
+func Decimal(cube []int) (h uint64) {
 	for _, v := range cube {
 		h = h*10 + uint64(v)
 	}

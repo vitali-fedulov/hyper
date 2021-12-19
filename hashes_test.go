@@ -6,9 +6,8 @@ import (
 )
 
 func TestDecimal(t *testing.T) {
-	numBuckets := 5
 	hypercube := []int{3, 2, 0, 1, 1, 4, 1, 0}
-	hash := Decimal(hypercube, numBuckets)
+	hash := Decimal(hypercube)
 	want := uint64(32011410)
 	if hash != want {
 		t.Errorf(`Got %v, want %v.`, hash, want)
