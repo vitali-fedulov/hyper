@@ -1,6 +1,6 @@
 # Hashing float vectors in N-dimensions
 
-This is a working beta version. Please fork if you want use it long term, as the API is not finalized yet.
+Code is under development. Still there as some bugs. Should be ready soon.
 
 ### Algorithm
 

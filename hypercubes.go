@@ -47,14 +47,14 @@ func CubeSet(
 		// Value is in the lower uncertainty interval.
 		if val-float64(bC)*bucketWidth < eps {
 			bS = bC - 1
-			if val-eps >= min {
+			if val-eps > min {
 				branching = true
 			}
 
 			// Value is in the upper uncertainty interval.
 		} else if float64(bC+1)*bucketWidth-val < eps {
 			bS = bC + 1
-			if val+eps <= max {
+			if val+eps < max {
 				branching = true
 			}
 		}
