@@ -1,6 +1,6 @@
 # Hashing float vectors in N-dimensions
 
-CODE IS UNDER CONSTRUCTION: still there are some bugs. Should be ready within a few days.
+UNDER CONSTRUCTION: still there are some bugs. Should be ready within a few days.
 
 ### Algorithm
 

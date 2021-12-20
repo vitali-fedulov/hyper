@@ -1,21 +1,15 @@
 package hyper
 
-// Params helps with discretization parameters.
-// numBuckets is number of buckets per dimension.
-// min and max are value limits per dimension.
-// epsPercent is the uncertainty interval expressed as fraction
-// of bucketWidth.
-// eps is the absolute value of the uncertainty interval epsilon.
-func Params(
-	numBuckets int, min, max, epsPercent float64) (
-	bucketWidth, eps float64) {
-	if epsPercent >= 0.5 {
-		panic(`Error: epsPercent must be less than 50%.
-			Recommendation: decrease numBuckets instead.`)
+// rescale is a helper function to offset and rescale all values
+// to [0, numBuckets] range.
+func rescale(vector []float64, numBuckets int, min, max float64) []float64 {
+	rescaled := make([]float64, len(vector))
+	amp := max - min
+	for i := range vector {
+		// Offset to zero and rescale to [0, numBuckets] range.
+		rescaled[i] = (vector[i] - min) * float64(numBuckets) / amp
 	}
-	bucketWidth = (max - min) / float64(numBuckets)
-	eps = epsPercent * bucketWidth
-	return bucketWidth, eps
+	return rescaled
 }
 
 // CubeSet returns a set of hypercubes, which represent
@@ -26,39 +20,71 @@ func Params(
 // min and max are minimum and maximum possible values of
 // the vector components. The assumption is that min and max
 // are the same for all dimensions.
-// bucketWidth and eps are defined in the Params function.
-func CubeSet(
-	vector []float64, min, max, bucketWidth, eps float64) (
-	set [][]int) {
+// numBuckets is number of buckets per dimension.
+// min and max are value limits per dimension.
+// epsPercent is the uncertainty interval expressed as
+// a fraction of bucketWidth (for example 0.25 for eps = 1/4
+// of bucketWidth).
+func CubeSet(vector []float64, min, max, epsPercent float64,
+	numBuckets int) (set [][]int) {
+
+	if epsPercent >= 0.5 {
+		panic(`Error: epsPercent must be less than 0.5.`)
+	}
 
 	var (
-		bC, bS    int     // Central and side bucket ids.
+		bC, bS    int     // Central and side bucket number.
+		bL, bR    int     // Left and right bucket number.
 		setCopy   [][]int // Set copy.
 		length    int
 		branching bool // Branching flag.
 	)
 
-	// For each component of the vector.
-	for _, val := range vector {
+	// Rescaling vector to avoid potential mistakes with
+	// divisions and offsets later on.
+	rescaled := rescale(vector, numBuckets, min, max)
+	// After the rescale value range of the vector are
+	// [0, numBuckets], and not [min, max].
 
-		bC = int(val / bucketWidth)
+	// min = 0.0 from now on.
+	max = float64(numBuckets)
+
+	for _, val := range rescaled {
+
 		branching = false
 
-		// Value is in the lower uncertainty interval.
-		if val-float64(bC)*bucketWidth < eps {
-			bS = bC - 1
-			if val-eps > min {
-				branching = true
-			}
+		bL = int(val - epsPercent)
+		bR = int(val + epsPercent)
 
-			// Value is in the upper uncertainty interval.
-		} else if float64(bC+1)*bucketWidth-val < eps {
-			bS = bC + 1
-			if val+eps < max {
-				branching = true
-			}
+		// Get extreme values out of the way.
+		if val-epsPercent <= 0.0 { // This means that val >= 0.
+			bC = bR
+			goto branchingCheck // No branching.
 		}
 
+		// Get extreme values out of the way.
+		if val+epsPercent >= max { // This means that val =< max.
+			// Above max = numBuckets.
+			bC = bL
+			goto branchingCheck // No branching.
+		}
+
+		if bL == bR {
+			bC = bL
+			goto branchingCheck // No branching.
+
+		} else { // Meaning bL != bR and not any condition above.
+			bC = int(val)
+			if bL == bC {
+				bS = bR // So we have bC, have not lost bL, and get bR.
+			} else { // That is when bL != bC
+				bS = bL // So we have bC, have bL, and since can only have
+				// 2 buckets possible, bC is our bR (bR not lost).
+			}
+			branching = true
+		}
+
+	branchingCheck:
 		if branching {
 			setCopy = make([][]int, len(set))
 			copy(setCopy, set)
@@ -84,7 +110,6 @@ func CubeSet(
 			set = append(set, setCopy...)
 
 		} else {
-
 			if len(set) == 0 {
 				set = append(set, []int{bC})
 			} else {
@@ -112,17 +137,33 @@ func CubeSet(
 
 // CentralCube returns the hypercube containing the vector end.
 // Arguments are the same as for the CubeSet function.
-func CentralCube(
-	vector []float64, min, max, bucketWidth, eps float64) (
-	central []int) {
+func CentralCube(vector []float64, min, max, epsPercent float64,
+	numBuckets int) (central []int) {
 
-	var bC int // Central bucket ids.
-
-	// For each component of the vector.
-	for _, val := range vector {
-		bC = int(val / bucketWidth)
-		central = append(central, bC)
+	if epsPercent >= 0.5 {
+		panic(`Error: epsPercent must be less than 0.5.`)
 	}
 
+	var bC int // Central bucket numbers.
+
+	// Rescaling vector to avoid potential mistakes with
+	// divisions and offsets later on.
+	rescaled := rescale(vector, numBuckets, min, max)
+	// After the rescale value range of the vector are
+	// [0, numBuckets], and not [min, max].
+
+	// min = 0.0 from now on.
+	max = float64(numBuckets)
+
+	for _, val := range rescaled {
+		bC = int(val)
+		if val-epsPercent <= 0.0 { //  This means that val >= 0.
+			bC = int(val + epsPercent)
+		}
+		if val+epsPercent >= max { // Meaning val =< max.
+			bC = int(val - epsPercent)
+		}
+		central = append(central, bC)
+	}
 	return central
 }

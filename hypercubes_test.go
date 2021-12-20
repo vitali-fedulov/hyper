@@ -5,33 +5,35 @@ import (
 	"testing"
 )
 
-func TestParams(t *testing.T) {
-	numBuckets, min, max, epsPercent := 10, 0.0, 255.0, 0.25
-	bucketWidth, eps := Params(numBuckets, min, max, epsPercent)
-	wantBucketWidth, wantEps := 25.5, 6.375
-	if bucketWidth != wantBucketWidth {
-		t.Errorf(`Got bucketWidth %v, want %v.`, bucketWidth, wantBucketWidth)
-	}
-	if eps != wantEps {
-		t.Errorf(`Got eps %v, want %v.`, eps, wantEps)
+func TestRescale(t *testing.T) { // Testing panic.
+	numBuckets, min, max, _ := 10, 0.0, 255.0, 0.25
+	vector := []float64{25.5, 0.01, 210.3, 93.9, 6.6, 9.1, 255.0}
+	rescaled := rescale(vector, numBuckets, min, max)
+	got := rescaled
+	want := []float64{
+		1, 0.0003921568627450981, 8.24705882352941,
+		3.6823529411764704, 0.25882352941176473,
+		0.3568627450980392, 10}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf(`Got %v, want %v.`, got, want)
 	}
 }
 
-func TestParamsPanic(t *testing.T) {
+func TestCubeSet1(t *testing.T) { // Testing panic.
 	defer func() { recover() }()
 	// Intentionally forbiden value for epsPercent.
-	numBuckets, min, max, epsPercent := 10, 0.0, 255.0, 0.51
-	_, _ = Params(numBuckets, min, max, epsPercent)
+	values := []float64{25.5, 0.01, 210.3, 93.9, 6.6, 9.1, 254.9}
+	min, max, epsPercent, numBuckets := 0.0, 255.0, 0.51, 10
+	_ = CubeSet(values, min, max, epsPercent, numBuckets)
 	// Never reaches here if Params panics.
 	t.Errorf("Params did not panic on epsPercent > 0.5")
 }
 
-func TestHypercubes1(t *testing.T) {
+func TestCubeSet2(t *testing.T) {
 	numBuckets, min, max, epsPercent := 10, 0.0, 255.0, 0.25
 	values := []float64{25.5, 0.01, 210.3, 93.9, 6.6, 9.1, 254.9}
-	bucketWidth, eps := Params(numBuckets, min, max, epsPercent)
-	gotCubes := CubeSet(values, min, max, bucketWidth, eps)
-	gotCentral := CentralCube(values, min, max, bucketWidth, eps)
+	gotCubes := CubeSet(values, min, max, epsPercent, numBuckets)
+	gotCentral := CentralCube(values, min, max, epsPercent, numBuckets)
 	wantCubes := [][]int{{1, 0, 8, 3, 0, 0, 9}, {0, 0, 8, 3, 0, 0, 9},
 		{1, 0, 7, 3, 0, 0, 9}, {0, 0, 7, 3, 0, 0, 9}}
 	wantCentral := []int{1, 0, 8, 3, 0, 0, 9}
@@ -44,12 +46,16 @@ func TestHypercubes1(t *testing.T) {
 	if centralIsNotInTheSet(gotCubes, gotCentral) {
 		t.Errorf(`Central %v is not in the set %v.`, gotCentral, gotCubes)
 	}
+}
 
-	values = []float64{0.01, bucketWidth * 2 * 0.999, bucketWidth * 2 * 1.001}
-	gotCubes = CubeSet(values, min, max, bucketWidth, eps)
-	gotCentral = CentralCube(values, min, max, bucketWidth, eps)
-	wantCubes = [][]int{{0, 1, 2}, {0, 2, 2}, {0, 1, 1}, {0, 2, 1}}
-	wantCentral = []int{0, 1, 2}
+// Testing bucket borders.
+func TestCubeSet3(t *testing.T) {
+	numBuckets, min, max, epsPercent := 4, 0.0, 4.0, 0.25
+	values := []float64{0.01, 2 * 0.999, 2 * 1.001}
+	gotCubes := CubeSet(values, min, max, epsPercent, numBuckets)
+	gotCentral := CentralCube(values, min, max, epsPercent, numBuckets)
+	wantCubes := [][]int{{0, 1, 2}, {0, 2, 2}, {0, 1, 1}, {0, 2, 1}}
+	wantCentral := []int{0, 1, 2}
 	if !reflect.DeepEqual(gotCubes, wantCubes) {
 		t.Errorf(`Got %v, want %v.`, gotCubes, wantCubes)
 	}
@@ -62,14 +68,11 @@ func TestHypercubes1(t *testing.T) {
 }
 
 // Testing extreme buckets.
-func TestHypercubes2(t *testing.T) {
+func TestCubeSet4(t *testing.T) {
 	values := []float64{255.0, 0.0, 255.0, 0.0, 255.0, 0.0, 255.0}
 	numBuckets, min, max, epsPercent := 4, 0.0, 255.0, 0.25
-	bucketWidth, eps := Params(numBuckets, min, max, epsPercent)
-	gotCubes := CubeSet(values, min, max, bucketWidth, eps)
-	wantCubes := [][]int{{1, 0, 8, 3, 0, 0, 9}, {0, 0, 8, 3, 0, 0, 9},
-		{1, 0, 7, 3, 0, 0, 9}, {0, 0, 7, 3, 0, 0, 9}}
-	t.Error(bucketWidth, eps)
+	gotCubes := CubeSet(values, min, max, epsPercent, numBuckets)
+	wantCubes := [][]int{{3, 0, 3, 0, 3, 0, 3}}
 	if !reflect.DeepEqual(gotCubes, wantCubes) {
 		t.Errorf(`Got %v, want %v.`, gotCubes, wantCubes)
 	}
