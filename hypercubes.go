@@ -12,6 +12,15 @@ func rescale(vector []float64, numBuckets int, min, max float64) []float64 {
 	return rescaled
 }
 
+// clone makes a totally independent copy of a 2D slice.
+func clone(src [][]int) (dst [][]int) {
+	dst = make([][]int, len(src))
+	for i := range src {
+		dst[i] = append([]int{}, src[i]...)
+	}
+	return dst
+}
+
 // CubeSet returns a set of hypercubes, which represent
 // fuzzy discretization of one n-dimensional vector,
 // as described in
@@ -33,11 +42,10 @@ func CubeSet(vector []float64, min, max, epsPercent float64,
 	}
 
 	var (
-		bC, bS    int     // Central and side bucket number.
-		bL, bR    int     // Left and right bucket number.
-		setCopy   [][]int // Set copy.
-		length    int
-		branching bool // Branching flag.
+		bC         int     // Central bucket number.
+		bL, bR     int     // Left and right bucket number.
+		setL, setR [][]int // Set copies.
+		branching  bool    // Branching flag.
 	)
 
 	// Rescaling vector to avoid potential mistakes with
@@ -72,49 +80,40 @@ func CubeSet(vector []float64, min, max, epsPercent float64,
 		if bL == bR {
 			bC = bL
 			goto branchingCheck // No branching.
-
 		} else { // Meaning bL != bR and not any condition above.
-			bC = int(val)
-			if bL == bC {
-				bS = bR // So we have bC, have not lost bL, and get bR.
-			} else { // That is when bL != bC
-				bS = bL // So we have bC, have bL, and since can only have
-				// 2 buckets possible, bC is our bR (bR not lost).
-			}
 			branching = true
 		}
 
 	branchingCheck:
+
 		if branching {
-			setCopy = make([][]int, len(set))
-			copy(setCopy, set)
 
-			if len(set) == 0 {
-				set = append(set, []int{bC})
+			setL = clone(set)
+			setR = clone(set)
+
+			if len(setL) == 0 {
+				setL = append(setL, []int{bL})
 			} else {
-				length = len(set)
-				for i := 0; i < length; i++ {
-					set[i] = append(set[i], bC)
+				for i := range setL {
+					setL[i] = append(setL[i], bL)
 				}
 			}
 
-			if len(setCopy) == 0 {
-				setCopy = append(setCopy, []int{bS})
+			if len(setR) == 0 {
+				setR = append(setR, []int{bR})
 			} else {
-				length = len(setCopy)
-				for i := 0; i < length; i++ {
-					setCopy[i] = append(setCopy[i], bS)
+				for i := range setR {
+					setR[i] = append(setR[i], bR)
 				}
 			}
 
-			set = append(set, setCopy...)
+			set = append(setL, setR...)
 
-		} else {
+		} else { // No branching.
 			if len(set) == 0 {
 				set = append(set, []int{bC})
 			} else {
-				length = len(set)
-				for i := 0; i < length; i++ {
+				for i := range set {
 					set[i] = append(set[i], bC)
 				}
 			}
@@ -124,9 +123,8 @@ func CubeSet(vector []float64, min, max, epsPercent float64,
 	// Real use case verification that branching works correctly
 	// and no buckets are lost for a very large number of vectors.
 	// TODO: Remove once tested.
-	length = len(vector)
 	for i := 0; i < len(set); i++ {
-		if len(set[i]) != length {
+		if len(set[i]) != len(vector) {
 			panic(`Number of hypercube coordinates must equal
 			to len(vector).`)
 		}
