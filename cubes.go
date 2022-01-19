@@ -1,24 +1,18 @@
 package hyper
 
-// rescale is a helper function to offset and rescale all values
-// to [0, numBuckets] range.
-func rescale(vector []float64, numBuckets int, min, max float64) []float64 {
-	rescaled := make([]float64, len(vector))
-	amp := max - min
-	for i := range vector {
-		// Offset to zero and rescale to [0, numBuckets] range.
-		rescaled[i] = (vector[i] - min) * float64(numBuckets) / amp
-	}
-	return rescaled
-}
+// Hypercube is represented by a slice of its coordinates.
+type Cube []int
+type Cubes []Cube
 
-// clone makes a totally independent copy of a 2D slice.
-func clone(src [][]int) (dst [][]int) {
-	dst = make([][]int, len(src))
-	for i := range src {
-		dst[i] = append([]int{}, src[i]...)
-	}
-	return dst
+// Parameters of space discretization.
+type Params struct {
+	// Value limits per dimension. For example 0, 255 for pixel values.
+	Min, Max float64
+	// Uncertainty interval expressed as a fraction of bucketWidth
+	// (for example 0.25 for eps = 1/4 of bucketWidth).
+	EpsPercent float64
+	// Number of buckets per dimension.
+	NumBuckets int
 }
 
 // CubeSet returns a set of hypercubes, which represent
@@ -29,49 +23,43 @@ func clone(src [][]int) (dst [][]int) {
 // min and max are minimum and maximum possible values of
 // the vector components. The assumption is that min and max
 // are the same for all dimensions.
-// numBuckets is number of buckets per dimension.
-// min and max are value limits per dimension.
-// epsPercent is the uncertainty interval expressed as
-// a fraction of bucketWidth (for example 0.25 for eps = 1/4
-// of bucketWidth).
-func CubeSet(vector []float64, min, max, epsPercent float64,
-	numBuckets int) (set [][]int) {
+func CubeSet(vector []float64, params Params) (set Cubes) {
 
-	if epsPercent >= 0.5 {
-		panic(`Error: epsPercent must be less than 0.5.`)
+	if params.EpsPercent >= 0.5 {
+		panic(`Error: EpsPercent must be less than 0.5.`)
 	}
 
 	var (
-		bC         int     // Central bucket number.
-		bL, bR     int     // Left and right bucket number.
-		setL, setR [][]int // Set copies.
-		branching  bool    // Branching flag.
+		bC         int   // Central bucket number.
+		bL, bR     int   // Left and right bucket number.
+		setL, setR Cubes // Set clones (for Left and Right).
+		branching  bool  // Branching flag.
 	)
 
 	// Rescaling vector to avoid potential mistakes with
 	// divisions and offsets later on.
-	rescaled := rescale(vector, numBuckets, min, max)
+	rescaled := rescale(vector, params)
 	// After the rescale value range of the vector are
 	// [0, numBuckets], and not [min, max].
 
 	// min = 0.0 from now on.
-	max = float64(numBuckets)
+	max := float64(params.NumBuckets)
 
 	for _, val := range rescaled {
 
 		branching = false
 
-		bL = int(val - epsPercent)
-		bR = int(val + epsPercent)
+		bL = int(val - params.EpsPercent)
+		bR = int(val + params.EpsPercent)
 
 		// Get extreme values out of the way.
-		if val-epsPercent <= 0.0 { // This means that val >= 0.
+		if val-params.EpsPercent <= 0.0 { // This means that val >= 0.
 			bC = bR
 			goto branchingCheck // No branching.
 		}
 
 		// Get extreme values out of the way.
-		if val+epsPercent >= max { // This means that val =< max.
+		if val+params.EpsPercent >= max { // This means that val =< max.
 			// Above max = numBuckets.
 			bC = bL
 			goto branchingCheck // No branching.
@@ -135,33 +123,54 @@ func CubeSet(vector []float64, min, max, epsPercent float64,
 
 // CentralCube returns the hypercube containing the vector end.
 // Arguments are the same as for the CubeSet function.
-func CentralCube(vector []float64, min, max, epsPercent float64,
-	numBuckets int) (central []int) {
+func CentralCube(vector []float64, params Params) (central Cube) {
 
-	if epsPercent >= 0.5 {
-		panic(`Error: epsPercent must be less than 0.5.`)
+	if params.EpsPercent >= 0.5 {
+		panic(`Error: EpsPercent must be less than 0.5.`)
 	}
 
 	var bC int // Central bucket numbers.
 
 	// Rescaling vector to avoid potential mistakes with
 	// divisions and offsets later on.
-	rescaled := rescale(vector, numBuckets, min, max)
+	rescaled := rescale(vector, params)
 	// After the rescale value range of the vector are
 	// [0, numBuckets], and not [min, max].
 
 	// min = 0.0 from now on.
-	max = float64(numBuckets)
+	max := float64(params.NumBuckets)
 
 	for _, val := range rescaled {
 		bC = int(val)
-		if val-epsPercent <= 0.0 { //  This means that val >= 0.
-			bC = int(val + epsPercent)
+		if val-params.EpsPercent <= 0.0 { //  This means that val >= 0.
+			bC = int(val + params.EpsPercent)
 		}
-		if val+epsPercent >= max { // Meaning val =< max.
-			bC = int(val - epsPercent)
+		if val+params.EpsPercent >= max { // Meaning val =< max.
+			bC = int(val - params.EpsPercent)
 		}
 		central = append(central, bC)
 	}
 	return central
+}
+
+// rescale is a helper function to offset and rescale all values
+// to [0, numBuckets] range.
+func rescale(vector []float64, params Params) []float64 {
+	rescaled := make([]float64, len(vector))
+	amp := params.Max - params.Min
+	for i := range vector {
+		// Offset to zero and rescale to [0, numBuckets] range.
+		rescaled[i] =
+			(vector[i] - params.Min) * float64(params.NumBuckets) / amp
+	}
+	return rescaled
+}
+
+// clone makes an unlinked copy of a 2D slice.
+func clone(src Cubes) (dst Cubes) {
+	dst = make(Cubes, len(src))
+	for i := range src {
+		dst[i] = append(Cube{}, src[i]...)
+	}
+	return dst
 }
