@@ -2,7 +2,7 @@
 
 Package hyper allows fast approximate search of nearest neighbour vectors in n-dimensional space.
 
-Package functions discretize a vector and generate a set of hashes, as described in the following document: https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html
+Package functions discretize a vector and generate a set of hashes, as described in the [following document](https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html).
 
 To use the package follow the sequence of functions/methods:
 1) CubeSet or CentralCube, depending which one is used for a database record and which one for a query.
