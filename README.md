@@ -1,6 +1,6 @@
 # Hashing float vectors in N-dimensions
 
-Package hyper allows fast approximate search of nearest neighbour vectors in n-dimensional space.
+Package hyper allows fast approximate search of nearest neighbour vectors in n-dimensional space. It does not have any dependencies.
 
 Package functions discretize a vector and generate a set of hashes, as described in the [following document](https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html).
 
