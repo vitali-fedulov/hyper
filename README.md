@@ -1,6 +1,6 @@
 # Hashing float vectors in N-dimensions
 
-This package allows fast approximate search of nearest neighbour vectors in n-dimensional space. It does not have any dependencies.
+Search nearest neighbour vectors in n-dimensional space with hashes. There are no dependencies in this package.
 
 Its functions discretize a vector and generate a set of hashes, as described [here](https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)).
 
