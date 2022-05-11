@@ -2,7 +2,7 @@
 
 Search nearest neighbour vectors in n-dimensional space with hashes. There are no dependencies in this package.
 
-Each vestor is discretized into a set of hashes, as described [here](https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)).
+Each vestor is discretized into a set of hashes, as described [here](https://vitali-fedulov.github.io/similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)).
 
 Usage sequence:
 1) CubeSet or CentralCube, depending which one is used for a database record and which one for a query.
