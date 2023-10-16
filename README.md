@@ -1,4 +1,4 @@
-# Hashing float vectors in N-dimensions
+# Hashing N-dimensional float vectors
 
 Search nearest neighbour vectors in n-dimensional space with hashes. There are no dependencies in this package.
 
