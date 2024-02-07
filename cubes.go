@@ -18,7 +18,7 @@ type Params struct {
 // CubeSet returns a set of hypercubes, which represent
 // fuzzy discretization of one n-dimensional vector,
 // as described in
-// https://vitali-fedulov.github.io/algorithm-for-hashing-high-dimensional-float-vectors.html
+// https://vitali-fedulov.github.io/similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html
 // One hupercube is defined by bucket numbers in each dimension.
 // min and max are minimum and maximum possible values of
 // the vector components. The assumption is that min and max
