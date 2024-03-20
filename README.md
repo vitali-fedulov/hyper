@@ -2,7 +2,9 @@
 
 Search nearest neighbour vectors in n-dimensional space with hashes. There are no dependencies in this package.
 
-Each vestor is discretized into a set of hashes, as described [here](https://vitali-fedulov.github.io/similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)).
+The algorithm is based on the assumption that two real numbers can be considered equal within certain equality distance. Therefore quantization is applicable for comparison. To make sure points near or at quantization borders are also comparable, a vector can be discretized into more than one hash, as described [here](https://vitali-fedulov.github.io/similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)).
+
+
 
 ## How to use
 
