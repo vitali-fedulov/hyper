@@ -2,8 +2,9 @@
 
 Search nearest neighbour vectors in n-dimensional space with hashes. There are no dependencies in this package.
 
-The algorithm is based on the assumption that two real numbers can be considered equal within certain equality distance. Then quantization is used for comparison. To make sure points near or at quantization borders are also comparable, a vector can be discretized into more than one hash, as described [here](https://vitali-fedulov.github.io/similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)). The method indirectly clusters given vectors by hypercubes and their neighbourhoods.
+The algorithm is based on the assumption that two real numbers can be considered equal within certain equality distance. Then quantization is used for comparison. To make sure points near or at quantization borders are also comparable, a vector can be discretized into more than one hash, as described [here](https://vitali-fedulov.github.io/similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)). The method indirectly clusters given vectors by hypercubes and their neighbourhoods. It is exhaustive within a set precision.
 
+The algorithm assumes a uniform and normalized vector space - without manifolds or unrelated properties of dimensions, which can complicate search. But even with these complications sufficiently large hupercubes (small number of buckets) will probably work fine for prefiltering or sequencial filtering by smaller-dimentional sub-spaces as briefly mentioned in the article.
 
 ## How to use
 
