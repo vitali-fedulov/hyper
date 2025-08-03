@@ -7,7 +7,7 @@ The algorithm is based on the assumption that two real numbers can be considered
 
 ## How to use
 
-1) Normalize values of your input vectors to same min/max value range. Use min/max values in the parameters settings.
+1) Normalize each component of your input vectors to the same min/max value range. Use these min/max values in the parameters settings.
 2) Provided a float vector []float64, use `CentralCube` and `CubeSet` functions to generate hypercube coordinates []int and [][]int.
 3) Generate a `DecimalHash`/`FNV1aHash` and `HashSet` for corresponding central hash and hash set from the hypercube coordinates above. The difference between one hash and a hash set is that one corresponds to a hash-table record and the other to a query or vice versa, depending on performance/memory preference. There are 2 alternative hash functions: DecimalHash and FNV1aHash. DecimalHash does not have collisions, but is not suitable for cases with large number of buckets or dimensions. FNV1aHash is applicable for all cases.
 
