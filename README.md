@@ -6,7 +6,7 @@ The algorithm is based on the assumption that two real numbers can be considered
 
 The algorithm assumes a uniform and normalized vector space - without complex manifolds or very diverse properties of dimensions, which can potentially complicate search. But even with these complications, sufficiently large hupercubes (small number of buckets) will probably work fine for prefiltering or sequencial filtering by smaller-dimentional sub-spaces, as briefly mentioned in the article.
 
-It has not been tested on very high-dimensional vectors, as they may produce very large hash sets. The linked example below uses only 9 dimensions.
+It has not been tested on very high-dimensional vectors - but they may produce very large hash sets. The linked example below uses only 9 dimensions.
 
 ## How to use
 
