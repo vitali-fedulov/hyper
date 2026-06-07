@@ -2,7 +2,7 @@
 
 Search nearest neighbour vectors in n-dimensional space with hashes. No dependencies.
 
-IMPORTANT: For very high-dimensional vectors selection of the 2 parameters (below) becomes very important, else the algorithm may produce prohibitively large hash sets. The [example](https://github.com/vitali-fedulov/imagehash2/blob/main/hashes.go) uses only 9 dimensions. As alternatives it is possible to use the algorithm indirectly: (1) by dimensionality reduction, (2) by slicing n-vectors into smaller-dimensional vectors and then applying the algorithm sequentially, (3) by using only a few significant dimensions, which would find much smaller manageable vector pairs, and then applying a slower and more precise comparison method on the result.
+IMPORTANT: For very high-dimensional vectors selection of the 2 parameters (below) becomes very important, else the algorithm may produce prohibitively large hash sets. The [example](https://github.com/vitali-fedulov/imagehash2/blob/main/hashes.go) uses only 9 dimensions. As alternatives it is possible to use the algorithm indirectly: (1) by dimensionality reduction, (2) by slicing n-vectors into smaller-dimensional vectors and then applying the algorithm sequentially, (3) by using only a few significant dimensions, which would find much smaller sets manageable sets of vector pairs, and then applying a slower and more precise comparison method on the result.
 
 ## Algorithm
 
