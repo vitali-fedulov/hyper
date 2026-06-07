@@ -2,7 +2,9 @@
 
 Search nearest neighbour vectors in n-dimensional space with hashes. No dependencies.
 
-IMPORTANT: It is not directly useful for very high-dimensional vectors, because the algorithm may produce impractically large hash sets. The [example](https://github.com/vitali-fedulov/imagehash2/blob/main/hashes.go) uses only 9 dimensions. But it is possible to use it indirectly by either dimensionality reduction or by slicing n-vectors into smaller-dimensional vectors and then applying the algorithm sequentially.
+IMPORTANT: For very high-dimensional vectors selection of the 2 parameters (below) becomes very important, else the algorithm may produce prohibitively large hash sets. The [example](https://github.com/vitali-fedulov/imagehash2/blob/main/hashes.go) uses only 9 dimensions. As alternatives it is possible to use the algorithm indirectly: (1) by dimensionality reduction, (2) by slicing n-vectors into smaller-dimensional vectors and then applying the algorithm sequentially, (3) by using only a few significant dimensions, which would find much smaller manageable vector pairs, and then applying a slower and more precise comparison method on the result.
+
+## Algorithm
 
 The algorithm is based on the assumption that two real numbers can be considered equal within certain equality distance. Then quantization is used for comparison. To make sure points near or at quantization borders are also comparable, a vector can be discretized into more than one hash, as described [here](https://vitali-fedulov.github.io/similar.pictures/algorithm-for-hashing-high-dimensional-float-vectors.html) (also as [PDF](https://github.com/vitali-fedulov/research/blob/main/Algorithm%20for%20hashing%20float%20vectors.pdf)). The method indirectly clusters given vectors by hypercubes and their neighbourhoods. It is exhaustive within a set precision.
 
@@ -13,6 +15,14 @@ The algorithm assumes a uniform and normalized vector space - without complex ma
 1) Normalize each component of your input vectors to the same min/max value range. Use these min/max values in the parameters settings.
 2) Provided a float vector []float64, use `CentralCube` and `CubeSet` functions to generate hypercube coordinates []int and [][]int.
 3) Generate a `DecimalHash`/`FNV1aHash` and `HashSet` for corresponding central hash and hash set from the hypercube coordinates above. The difference between one hash and a hash set is that one corresponds to a hash-table record and the other to a query or vice versa, depending on performance/memory preference. There are 2 alternative hash functions: DecimalHash and FNV1aHash. DecimalHash does not have collisions, but is not suitable for cases with large number of buckets or dimensions. FNV1aHash is applicable for all cases. Hash collisions can be progressively eliminated by using custom hash functions or verifying similarity with the Euclidean metric.
+
+## Parameters
+
+`numBuckets` defines granularity of hyper-space quantization and precision.
+
+`epsilon` can be usually set to 0.25. But if numBuckets is very low, reducing it probably makes sense.
+
+## Resources
 
 [Example](https://github.com/vitali-fedulov/imagehash2/blob/main/hashes.go) for similar image search and clustering.
 
